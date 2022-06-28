@@ -106,14 +106,11 @@ class Juego():
                                 juego = self.jugador.juego
                                 carta = self.buscarCarta(movimiento[1], juego)
                                 destino = self.cartasBotadas
-                                if self.validarMovimiento(carta) == True:
+                                if self.validarMovimiento(carta):
                                     self.jugador.ponerCarta(carta, juego, destino)
                                     turno = True
-                                elif self.validarMovimiento(carta) == False:
-                                    print("No se puede realizar ese movimiento, verifique su juego e inténtelo nuevamente o arrastre una carta")
                                 else:
-                                    print(self.validarMovimiento(carta))
-                                    turno = True
+                                    print("No se puede realizar ese movimiento, verifique su juego e inténtelo nuevamente o arrastre una carta")
                             elif (movimiento[0] == 'a'):
                                 self.jugador.arrastrarCarta(self.cartas)
                                 turno = True
@@ -168,31 +165,22 @@ class Juego():
     def validarMovimiento(self, carta):
         cartaAValidar = carta.__str__().split("-")
         pila = self.cartasBotadas[-1].__str__().split("-")
-        self.aux = int(pila[1])
-        
-        if (self.aux == 10):
-            self.aux += 1
-            return "Estás bloqueado, siguiente jugador"
-        else: 
-            # Validar por color o por numero
-            try:
-                if (cartaAValidar[0] == pila[0]) or (cartaAValidar[1] == pila[1]):
-                    return True
-                else:
-                    return False
-            except IndexError:
-                pass
+
+        # Validar por color o por numero
+        try:
+            if (cartaAValidar[0] == pila[0]) or (cartaAValidar[1] == pila[1]):
+                return True
+            else:
+                return False
+        except IndexError:
+            pass
         
     def jugarEnAutomatico(self, jugadores):
         for jugador in jugadores:
             juego = jugador.juego
             for carta in list(juego):
-                if self.validarMovimiento(carta) == True:
+                if self.validarMovimiento(carta):
                     jugador.ponerCarta(carta, juego, self.cartasBotadas)
-                    break
-                elif self.validarMovimiento(carta) == False:
-                    continue
-                else:
                     break
             else:
                 jugador.arrastrarCarta(self.cartas)
