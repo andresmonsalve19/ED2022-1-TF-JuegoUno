@@ -59,6 +59,9 @@ class Juego():
         ***************************************
         * Autores:
         * Jaime Andres Monsalve Ballesteros
+        * Fredy Alberto Orozco Loaiza
+        * Deumeck Hernandez Zuleta
+        * Francisco Garcia
         ***************************************
         * Menú Principal
         * 1. Instrucciones del juego
@@ -69,7 +72,24 @@ class Juego():
         
         print(pantallaInicial)
         
-        instrucciones = """"""
+        instrucciones = """
+        Para jugar este uno tenga en cuenta las siguientes recomendaciones:
+        
+        1. Para mover una carta a la pila "JUEGO" que es donde se bota la carta se debe hacer
+        introduciendo por teclado la siguiente notacion --> mj, espacio, carta a botar
+        Ejemplo --> mj R-8 --> Aquí se está moviendo la carta R-8.
+        
+        2. Para arrastrar una carta del MAZO se introduce por teclado la letra a
+        
+        NOTACION
+        mj --> Significa mover a juego (pila JUEGO)
+        a --> Significa arrastrar
+        Colores de las cartas --> R: Red = Rojo, G: Green = Verde, B: Blue = Azul,  Y: Yellow = Amarillo
+        Numeros = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12. El 10, 11 y 12 son especiales
+        10 --> Carta de bloqueo o Skip
+        11 --> Carta de cambio de sentido
+        12 --> Carta +2
+        """
 
         while (True):
             opcion = int(input("Elija una opcion: "))
