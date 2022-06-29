@@ -9,5 +9,3 @@ class Carta():
         carta = self.color +"-" + str(self.simbolo)
         return carta
     
-    def obtenerPropiedad(self):
-        pass

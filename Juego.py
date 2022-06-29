@@ -39,7 +39,7 @@ class Juego():
         
         # Se crea la pila de de cartas botadas
         self.cartasBotadas = deque()
-        
+        self.onces = 0
         self.iniciar()
     
     def iniciar(self):
@@ -101,88 +101,173 @@ class Juego():
             elif (opcion == 2):
                 self.cartasBotadas.append(random.choice(self.cartas))
                 turno = 0
-                
+                reverse = False
                 while True:
                     if (len(self.jugador.juego) == 0) or (len(self.jugadorAutomatico1.juego) == 0) or (len(self.jugadorAutomatico2.juego) == 0) or (len(self.jugadorAutomatico3.juego) == 0):
                         break
-                    if len(self.cartas) != 0:
-                        
-                        if turno == 0:
-                            pantallaPrincipal = f"""
-                            *********************************************************************
-                            * MAZO [*-*] ({len(self.cartas)}) ***** JUEGO [{self.mostrarJuego(self.cartasBotadas)}] ({len(self.cartasBotadas)})
-                            *********************************************************************
-                            * Jugador 1: {self.mostrarJuego((self.jugadorAutomatico1.juego))} *** ({len(self.jugadorAutomatico1.juego)})
-                            * Jugador 2: {self.mostrarJuego((self.jugadorAutomatico2.juego))} *** ({len(self.jugadorAutomatico2.juego)})
-                            * Jugador 3: {self.mostrarJuego((self.jugadorAutomatico3.juego))} *** ({len(self.jugadorAutomatico3.juego)})
-                            *********************************************************************
-                            * Mi juego: {self.mostrarJuego((self.jugador.juego))} *** ({len(self.jugador.juego)})
-                            *********************************************************************        
-                            """
-                            # Se imprime la pantalla principal del juego
-                            print(pantallaPrincipal)
-                            # Se le pide al usuario que haga su movimiento
-                            movimiento = input("Ingrese su movimiento: ").split()
-                            # Se programa una opcion para que pueda salirse del juego cuando el usuario lo desee                
-                            try:
-                                if (movimiento[0] == 'mj'):
-                                    juego = self.jugador.juego
-                                    carta = self.buscarCarta(movimiento[1], juego)
-                                    destino = self.cartasBotadas
-                                    if self.validarMovimiento(carta):
-                                        self.jugador.ponerCarta(carta, juego, destino)
-                                        ultimaCarta = self.cartasBotadas[-1].__str__().split("-")
-                                        numero = int(ultimaCarta[1])
-                                        if numero != 10:
+                    if turno == 0:
+                        pantallaPrincipal = f"""
+                        *********************************************************************
+                        * MAZO [*-*] ({len(self.cartas)}) ***** JUEGO [{self.mostrarJuego(self.cartasBotadas)}] ({len(self.cartasBotadas)})
+                        *********************************************************************
+                        * Jugador 1: {self.mostrarJuego((self.jugadorAutomatico1.juego))} *** ({len(self.jugadorAutomatico1.juego)})
+                        * Jugador 2: {self.mostrarJuego((self.jugadorAutomatico2.juego))} *** ({len(self.jugadorAutomatico2.juego)})
+                        * Jugador 3: {self.mostrarJuego((self.jugadorAutomatico3.juego))} *** ({len(self.jugadorAutomatico3.juego)})
+                        *********************************************************************
+                        * Mi juego: {self.mostrarJuego((self.jugador.juego))} *** ({len(self.jugador.juego)})
+                        *********************************************************************        
+                        """
+                        # Se imprime la pantalla principal del juego
+                        print(pantallaPrincipal)
+                        print(self.onces)
+                        # Se le pide al usuario que haga su movimiento
+                        movimiento = input("Ingrese su movimiento: ").split()
+                        # Se programa una opcion para que pueda salirse del juego cuando el usuario lo desee                
+                        try:
+                            if (movimiento[0] == 'mj') and (int(movimiento[1].split("-")[1]) in self.numeros):
+                                juego = self.jugador.juego
+                                carta = self.buscarCarta(movimiento[1], juego)
+                                destino = self.cartasBotadas
+                                if self.validarMovimiento(carta):
+                                    self.jugador.ponerCarta(carta, juego, destino)
+                                    ultimaCarta = self.cartasBotadas[-1].__str__().split("-")
+                                    numero = int(ultimaCarta[1])
+                                    if numero == 10:
+                                        turno = 2
+                                        continue
+                                    elif numero == 11:
+                                        self.onces += 1
+                                        if self.onces%2 != 0: 
+                                            reverse = True
+                                            turno = 3               
+                                            continue
+                                        else:
+                                            reverse = False
                                             turno = 1
                                             continue
-                                        elif numero == 10:
-                                            turno = 2
+                                    elif numero == 12:
+                                        if reverse:
+                                            turno = 3
                                             continue
+                                        turno = 1
+                                        #self.tomarDosCartas(self.jugador)
+                                        continue
                                     else:
-                                        print("No se puede realizar ese movimiento, verifique su juego e inténtelo nuevamente o arrastre una carta")
-                                elif (movimiento[0] == 'a'):
-                                    self.jugador.arrastrarCarta(self.cartas)
-                                    turno = 1
-                                    continue
+                                        if reverse:
+                                            turno = 3
+                                            continue
+                                        turno = 1
+                                        continue
                                 else:
-                                    if (int(movimiento[0]) == 0):
-                                        break
-                            except ValueError:
-                                print("Movimiento no válido")
-                            except IndexError:
-                                pass  
-                        elif turno == 1:
-                            self.jugarEnAutomatico(self.jugadorAutomatico1)
-                            ultimaCarta = self.cartasBotadas[-1].__str__().split("-")
-                            numero = int(ultimaCarta[1])
-                            if numero != 10: 
-                                turno = 2
-                                continue
-                            elif numero == 10:
-                                turno = 3
-                                continue                               
-                        elif  turno == 2:
-                            self.jugarEnAutomatico(self.jugadorAutomatico2)
-                            ultimaCarta = self.cartasBotadas[-1].__str__().split("-")
-                            numero = int(ultimaCarta[1])
-                            if numero != 10: 
-                                turno = 3
-                                continue
-                            elif numero == 10:
-                                turno = 0
-                                continue
-                        elif turno == 3:
-                            self.jugarEnAutomatico(self.jugadorAutomatico3)
-                            ultimaCarta = self.cartasBotadas[-1].__str__().split("-")
-                            numero = int(ultimaCarta[1])
-                            if numero != 10: 
-                                turno = 0
-                                continue
-                            elif numero == 10:
+                                    print("No se puede realizar ese movimiento, verifique su juego e inténtelo nuevamente o arrastre una carta")
+                            elif (movimiento[0] == 'a'):
+                                self.jugador.arrastrarCarta(self.cartas)
+                                if reverse:
+                                    turno = 3
+                                    continue
                                 turno = 1
                                 continue
-                
+                            else:
+                                if (int(movimiento[0]) == 0):
+                                    break
+                        except ValueError:
+                            print("Movimiento no válido")
+                        except IndexError:
+                            pass  
+                        
+                    elif turno == 1:
+                        self.jugarEnAutomatico(self.jugadorAutomatico1)
+                        ultimaCarta = self.cartasBotadas[-1].__str__().split("-")
+                        numero = int(ultimaCarta[1])
+                        if numero == 10:
+                            turno = 3
+                            continue
+                        elif numero == 11:
+                            self.onces += 1
+                            if self.onces%2 != 0: 
+                                reverse = True
+                                turno = 0               
+                                continue
+                            else:
+                                reverse = False
+                                turno = 2
+                                continue
+                        elif numero == 12:
+                            if reverse:
+                                turno = 0
+                                continue
+                            turno = 2
+                            #self.tomarDosCartas(self.jugadorAutomatico1)
+                            continue
+                        else:
+                            if reverse:
+                                turno = 0
+                                continue
+                            turno = 2
+                            continue        
+                                               
+                    elif  turno == 2:
+                        self.jugarEnAutomatico(self.jugadorAutomatico2)
+                        ultimaCarta = self.cartasBotadas[-1].__str__().split("-")
+                        numero = int(ultimaCarta[1])
+                        if numero == 10:
+                            turno = 0
+                            continue
+                        elif numero == 11:
+                            self.onces += 1
+                            if self.onces%2 != 0: 
+                                reverse = True
+                                turno = 1               
+                                continue
+                            else:
+                                reverse = False
+                                turno = 3
+                                continue
+                        elif numero == 12:
+                            if reverse:
+                                turno = 1
+                                continue
+                            turno = 3
+                            #self.tomarDosCartas(self.jugadorAutomatico2)
+                            continue
+                        else:
+                            if reverse:
+                                turno = 1
+                                continue
+                            turno = 3
+                            continue
+                        
+                    elif turno == 3:
+                        self.jugarEnAutomatico(self.jugadorAutomatico3)
+                        ultimaCarta = self.cartasBotadas[-1].__str__().split("-")
+                        numero = int(ultimaCarta[1])
+                        if numero == 10:
+                            turno = 1
+                            continue
+                        elif numero == 11:
+                            self.onces += 1
+                            if self.onces%2 != 0: 
+                                reverse = True
+                                turno = 2               
+                                continue
+                            else:
+                                reverse = False
+                                turno = 0
+                                continue
+                        elif numero == 12:
+                            if reverse:
+                                turno = 2
+                                continue
+                            turno = 0
+                            #self.tomarDosCartas(self.jugadorAutomatico3)
+                            continue
+                        else:
+                            if reverse:
+                                turno = 2
+                                continue
+                            turno = 0
+                            continue
+            
                     self.recargarColaDeArrastre()
                 break
                 
@@ -253,3 +338,7 @@ class Juego():
                 
             self.cartasBotadas.append(ultimaCarta)
         self.revolverCartas(self.cartas)
+    
+    def tomarDosCartas(self, jugador1, jugador2):
+        jugador1.arrastrarCarta(self.cartas)
+
